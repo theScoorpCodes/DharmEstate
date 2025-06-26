@@ -1,10 +1,21 @@
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Home, About, Profile, Signin, SignUp } from "./pages/index.js";
+import Header from "./components/Header";
 
 function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold">Welcome to Dharm Estate</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
