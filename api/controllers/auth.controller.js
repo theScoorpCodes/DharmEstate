@@ -33,7 +33,12 @@ const signin = async (req, res, next) => {
     if (!validUser) return next(errorHandler(404, "User not found"));
 
     const validPassword = bcryptjs.compareSync(password, validUser.password);
-    if (!validPassword) next(errorHandler(401, "Wrong credentials"));
+    console.log("Valid password:", validPassword);
+    if (!validPassword) {
+      console.log("Invalid password for user:", validUser.email);
+      next(errorHandler(401, "Wrong credentials"));
+      return;
+    }
 
     const token = jwt.sign({
       id: validUser._id,
