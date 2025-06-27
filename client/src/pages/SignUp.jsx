@@ -26,21 +26,21 @@ function SignUp() {
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+    const data = await res.json();
+
       if (data.success === false) {
         setLoading(false);
         setError(data.message);
         return;
       }
+
       setLoading(false);
       setError(null);
       navigate("/signin");
-      console.log(data);
     } catch (error) {
       setLoading(false);
       setError("Something went wrong");
     }
-    
   };
 
   return (
@@ -68,7 +68,10 @@ function SignUp() {
           id="password"
           onChange={handleChange}
         />
-        <button disabled={loading} className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+        >
           {loading ? "Loading..." : "Sign Up"}
         </button>
       </form>
