@@ -109,6 +109,24 @@ function Profile() {
     }
   };
 
+  const handleSignout = async () => {
+    dispatch(deleteUserStart());
+    try {
+      const res = await fetch("/api/auth/signout", {
+        method: "GET",
+      });
+      const data = await res.json();
+      if(data.success === false){
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      navigate("/signin");
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  }
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
@@ -149,19 +167,27 @@ function Profile() {
           className="border p-3 rounded-lg"
           onChange={handleChange}
         />
-        <button disabled={isLoading} className="bg-slate-700 text-white p-3 rounded-lg mt-4 uppercase hover:opacity-95 disabled:opacity-80">
+        <button
+          disabled={isLoading}
+          className="bg-slate-700 text-white p-3 rounded-lg mt-4 uppercase hover:opacity-95 disabled:opacity-80"
+        >
           {isLoading ? "Updating..." : "Update"}
         </button>
       </form>
 
       <div className="flex justify-between items-center mt-4">
-        <span className="text-red-700 cursor-pointer" onClick={handleDeleteUser}>Delete account</span>
-        <span className="text-red-700 cursor-pointer">sign out</span>
+        <span
+          className="text-red-700 cursor-pointer"
+          onClick={handleDeleteUser}
+        >
+          Delete account
+        </span>
+        <span className="text-red-700 cursor-pointer" onClick={handleSignout}>
+          sign out
+        </span>
       </div>
 
-      <p className="text-red-700 mt-5">
-        {error ? error : ""}
-      </p>
+      <p className="text-red-700 mt-5">{error ? error : ""}</p>
       <p className="text-green-700 mt-5 ">
         {updateSuccess ? "updated successfully" : ""}
       </p>
