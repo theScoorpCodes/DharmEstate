@@ -1,11 +1,16 @@
 import { useSelector } from "react-redux";
-import { useRef, useState, useEffect, use } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure
+  
 } from "../store/user/userSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 function Profile() {
@@ -15,6 +20,7 @@ function Profile() {
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // console.log(file);
   console.log(currentUser);
 
@@ -84,6 +90,25 @@ function Profile() {
     }
   };
 
+  const handleDeleteUser = async () => {
+    dispatch(deleteUserStart());
+    try {
+      const res = await fetch("/api/user/delete/"+currentUser._id, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      console.log(data);
+      if(data.success === false){
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      navigate("/signin");
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
@@ -130,7 +155,7 @@ function Profile() {
       </form>
 
       <div className="flex justify-between items-center mt-4">
-        <span className="text-red-700 cursor-pointer">Delete account</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleDeleteUser}>Delete account</span>
         <span className="text-red-700 cursor-pointer">sign out</span>
       </div>
 
