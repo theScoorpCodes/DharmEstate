@@ -1,12 +1,22 @@
 import { useSelector } from "react-redux";
 import { useRef, useState, useEffect, use } from "react";
+import {
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from "../store/user/userSlice";
+import { useDispatch } from "react-redux";
+
 
 function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, isLoading, error } = useSelector((state) => state.user);
   const fileRef = useRef();
   const [file, setFile] = useState(undefined);
   const [formData, setFormData] = useState({});
-  console.log(file);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const dispatch = useDispatch();
+  // console.log(file);
+  console.log(currentUser);
 
   useEffect(() => {
     if (file) {
@@ -16,7 +26,7 @@ function Profile() {
 
   const handleFileUpload = async (file) => {
     const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME; // ⬅️ Replace with your Cloudinary cloud name
-    const UPLOAD_PRESET = 'demoxv'; // ⬅️ Replace with your unsigned upload preset
+    const UPLOAD_PRESET = "demoxv"; // ⬅️ Replace with your unsigned upload preset
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
@@ -31,23 +41,53 @@ function Profile() {
       );
 
       const data = await res.json();
-      console.log("Uploaded Image URL:", data.secure_url);
+      // console.log("Uploaded Image URL:", data.secure_url);
 
       // Now update your formData state to include this URL (assuming it's an avatar)
       setFormData((prevData) => ({
         ...prevData,
         avatar: data.secure_url,
       }));
-      console.log("Updated formData:", formData);
+      // console.log("Updated formData:", formData);
     } catch (error) {
       console.error("Upload failed:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    // console.log("updated form data is ",formData);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+
+      const res = await fetch("/api/user/update/"+currentUser._id, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),      
+      });
+
+      const data = await res.json();
+      if(data.success === false){ 
+        dispatch(updateUserFailure(data.message));
+        return;
+      }  
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
     }
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7 ">Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           hidden
           accept="image/*"
@@ -66,21 +106,26 @@ function Profile() {
           id="username"
           placeholder="username"
           className="border p-3 rounded-lg"
+          defaultValue={currentUser.username}
+          onChange={handleChange}
         />
         <input
           type="email"
           id="email"
           placeholder="email"
           className="border p-3 rounded-lg"
+          defaultValue={currentUser.email}
+          onChange={handleChange}
         />
         <input
           type="password"
           id="password"
-          placeholder="password"
+          placeholder="change password"
           className="border p-3 rounded-lg"
+          onChange={handleChange}
         />
-        <button className="bg-slate-700 text-white p-3 rounded-lg mt-4 uppercase hover:opacity-95 disabled:opacity-80">
-          Update
+        <button disabled={isLoading} className="bg-slate-700 text-white p-3 rounded-lg mt-4 uppercase hover:opacity-95 disabled:opacity-80">
+          {isLoading ? "Updating..." : "Update"}
         </button>
       </form>
 
@@ -88,6 +133,13 @@ function Profile() {
         <span className="text-red-700 cursor-pointer">Delete account</span>
         <span className="text-red-700 cursor-pointer">sign out</span>
       </div>
+
+      <p className="text-red-700 mt-5">
+        {error ? error : ""}
+      </p>
+      <p className="text-green-700 mt-5 ">
+        {updateSuccess ? "updated successfully" : ""}
+      </p>
     </div>
   );
 }
