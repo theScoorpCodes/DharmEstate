@@ -10,7 +10,7 @@ import {
   
 } from "../store/user/userSlice";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 
 function Profile() {
@@ -173,6 +173,7 @@ function Profile() {
         >
           {isLoading ? "Updating..." : "Update"}
         </button>
+        <Link className="text-white bg-green-700 p-3 uppercase rounded-lg text-center hover:opacity-95" to="/create-listing"> CREATE LISTING</Link>
       </form>
 
       <div className="flex justify-between items-center mt-4">
