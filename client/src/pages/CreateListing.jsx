@@ -53,7 +53,7 @@ function CreateListing() {
                 min="1"
                 max="10"
                 required
-                className="p-3 border-gray-300 rounded-lg"
+                className="p-3 border-gray-300 rounded-lg bg-white"
               />
               <p>Bedrooms</p>
             </div>
@@ -64,7 +64,7 @@ function CreateListing() {
                 min="1"
                 max="5"
                 required
-                className="p-3 border-gray-300 rounded-lg"
+                className="p-3 border-gray-300 rounded-lg bg-white"
               />
               <p>Bathrooms</p>
             </div>
@@ -75,7 +75,7 @@ function CreateListing() {
                 min="1"
                 max="10"
                 required
-                className="p-3 border-gray-300 rounded-lg"
+                className="p-3 border-gray-300 rounded-lg bg-white"
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
@@ -89,7 +89,7 @@ function CreateListing() {
                 min="1"
                 max="10"
                 required
-                className="p-3 border-grey-300 rounded-lg"
+                className="p-3 border-gray-300 rounded-lg bg-white"
               />
               <div className="flex flex-col items-center">
                 <p>Discount Price</p>
