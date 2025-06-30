@@ -1,6 +1,7 @@
 import { errorHandler } from "../utils/Error.js";
 import bcryptjs from "bcryptjs";
 import User from "../models/user.model.js";
+import Listing from "../models/listing.model.js";
 
 const userTest = (req, res) => {
   res.send("User contoller route is working");
@@ -42,4 +43,15 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { userTest, updateUser, deleteUser };
+const getUserListings = async (req, res, next) => {
+  if(req.user.id !== req.params.id) return next(errorHandler(403, "You are not allowed to get this user's listings"));
+
+  try {
+    const listings = await Listing.find({ userRef: req.params.id });
+    res.status(200).json(listings);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { userTest, updateUser, deleteUser, getUserListings};
