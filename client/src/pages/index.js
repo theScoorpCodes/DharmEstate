@@ -3,5 +3,7 @@ import Home from "./Home";
 import Profile from "./Profile";
 import Signin from "./Signin";
 import SignUp from "./SignUp";
+import CreateListing from "./CreateListing";
+import UpdateListing from "./UpdateListing";
 
-export { About, Home, Profile, Signin, SignUp };
+export { About, Home, Profile, Signin, SignUp, CreateListing, UpdateListing };

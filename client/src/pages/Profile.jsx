@@ -20,7 +20,7 @@ function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingError, setShowListingError] = useState(false);
   const [userListings, setUserListings] = useState([]);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // console.log(file);
@@ -242,7 +242,9 @@ function Profile() {
 
       {userListings && userListings.length > 0 && (
         <div className="flex flex-col gap-4">
-          <h1 className="text-center my-7 text-2xl font-semibold">Your Listings</h1>
+          <h1 className="text-center my-7 text-2xl font-semibold">
+            Your Listings
+          </h1>
           {userListings.map((listing) => {
             return (
               <div
@@ -263,8 +265,15 @@ function Profile() {
                   <p>{listing.name}</p>
                 </Link>
                 <div className="flex flex-col">
-                  <button className="text-red-700 uppercase" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
-                  <button className="text-green-700 uppercase">Edit</button>
+                  <button
+                    className="text-red-700 uppercase"
+                    onClick={() => handleDeleteListing(listing._id)}
+                  >
+                    Delete
+                  </button>
+                  <Link to={`/update-listing/${listing._id}`}>
+                    <button className="text-green-700 uppercase">Edit</button>
+                  </Link>
                 </div>
               </div>
             );

@@ -1,8 +1,9 @@
-import { use, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-function CreateListing() {
+
+function UpdateListing() {
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -23,16 +24,40 @@ function CreateListing() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
+  useEffect(()=>{
+    const fetchListing = async () => {
+        const listingId = params.listingId;
+        const res = await fetch(`/api/listing/get/${listingId}`, {
+          method: "GET",
+        });
+        const data = await res.json();
+        console.log(data);
+        
+        if (data.success === false) {
+          setError(data.message);
+          setLoading(false);
+          return;
+        }
+        setFormData(data);
+    }
+    fetchListing();
+  },[])
+
   const handleImageSubmit = async (e) => {
-    console.log("Files in the handleImageSubmit:", files);
     setUploading(true);
     setIsImageUploadError(false);
 
-    if (files.length > 0 && files.length < 7) {
+    if (formData.imageUrls.length > 0 && formData.imageUrls.length < 7) {
       const promises = [];
-      const imgArr = [];
+      const imgArr = formData.imageUrls;
+      if(imgArr.length + files.length > 6){
+        setIsImageUploadError("you can upload maximum 6 images");
+        setUploading(false);
+        return
+      }
 
       for (let i = 0; i < files.length; i++) {
         promises.push(storeImage(files[i]));
@@ -40,12 +65,12 @@ function CreateListing() {
 
       Promise.all(promises)
         .then((imageUrls) => {
-          console.log(
-            "Uploaded Image URLs:",
-            imageUrls.forEach((url) => {
-              console.log(url.secure_url);
-            })
-          );
+        //   console.log(
+        //     "Uploaded Image URLs:",
+        //     imageUrls.forEach((url) => {
+        //       console.log(url.secure_url);
+        //     })
+        //   );
 
           imageUrls.forEach((url) => {
             imgArr.push(url.secure_url);
@@ -64,7 +89,7 @@ function CreateListing() {
           setUploading(false);
         });
     } else {
-      if (files.length === 0) {
+      if (formData.imageUrls.length === 0) {
         setIsImageUploadError("Please upload at least one image");
         setUploading(false);
       } else {
@@ -138,7 +163,7 @@ function CreateListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (files.length === 0) {
+      if (formData.imageUrls.length === 0) {
         setError("Please upload at least one image");
         return;
       }
@@ -149,7 +174,7 @@ function CreateListing() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("/api/listing/create", {
+      const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -176,7 +201,7 @@ function CreateListing() {
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
-        Create a Listing
+        Edit Listing
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
         <div className="flex flex-col gap-4 flex-1">
@@ -370,8 +395,11 @@ function CreateListing() {
                 </div>
               );
             })}
-          <button disabled={loading || uploading} className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-            {loading ? "Creating..." : "Create Listing"}
+          <button
+            disabled={loading || uploading}
+            className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          >
+            {loading ? "Updating..." : "Update Listing"}
           </button>
           {error && <p className="text-red-700 text-sm">{error}</p>}
         </div>
@@ -380,4 +408,4 @@ function CreateListing() {
   );
 }
 
-export default CreateListing;
+export default UpdateListing;
