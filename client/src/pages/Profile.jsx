@@ -20,9 +20,7 @@ function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingError, setShowListingError] = useState(false);
   const [userListings, setUserListings] = useState([]);
-  console.log(userListings);
   
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // console.log(file);
@@ -131,9 +129,24 @@ function Profile() {
     }
   };
 
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        setShowListingError(data.message);
+        return;
+      }
+      handleShowListings();
+    } catch (error) {
+      setShowListingError(error.message);
+    }
+  };
+
   const handleShowListings = async () => {
-    console.log("in the show listings");
-    
+    setShowListingError(false);
     try {
       const res = await fetch(`/api/user/listings/${currentUser._id}`, {
         method: "GET",
@@ -221,7 +234,7 @@ function Profile() {
         {updateSuccess ? "updated successfully" : ""}
       </p>
       <button className="text-green-700 w-full" onClick={handleShowListings}>
-        Show Listings
+        Show your listings
       </button>
       {showListingError && (
         <p className="text-red-700 mt-5 ">{showListingError}</p>
@@ -250,7 +263,7 @@ function Profile() {
                   <p>{listing.name}</p>
                 </Link>
                 <div className="flex flex-col">
-                  <button className="text-red-700 uppercase">Delete</button>
+                  <button className="text-red-700 uppercase" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
                   <button className="text-green-700 uppercase">Edit</button>
                 </div>
               </div>
