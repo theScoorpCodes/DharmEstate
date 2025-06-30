@@ -122,11 +122,41 @@ function UpdateListing() {
     });
   };
 
-  const handleRemoveImage = (index) => {
-    setFormData({
-      ...formData,
-      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+  const handleRemoveImage = async (index) => {
+    // setFormData({
+    //   ...formData,
+    //   imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+    // });
+
+    const imageUrl = formData.imageUrls[index];
+
+  // Extract public_id from the URL (you MUST store this in production)
+  const publicId = extractPublicId(imageUrl); // we'll define this below
+
+  try {
+    await fetch("/api/listing/delete-image", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ publicId }),
     });
+
+    // Remove from UI
+    setFormData((prev) => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+    }));
+  } catch (err) {
+    console.error("Failed to delete image", err);
+  }
+  };
+
+  const extractPublicId = (url) => {
+    const parts = url.split("/");
+    const fileName = parts[parts.length - 1];
+    const publicId = fileName.split(".")[0]; // removes .jpg/.png
+    return publicId;
   };
 
   const handleChange = (e) => {

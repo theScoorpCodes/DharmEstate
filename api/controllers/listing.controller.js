@@ -1,5 +1,6 @@
 import Listing from "../models/listing.model.js";
 import { errorHandler } from "../utils/Error.js";
+import cloudinary from "../utils/Cloudinary.js";
 
 const createListing = async (req, res, next) => {
     try {
@@ -46,4 +47,14 @@ const getListing = async (req, res, next) => {
   }
 }
 
-export { createListing, deleteListing, updateListing, getListing }
+const deleteImage = async (req, res, next) => {
+  const { publicId } = req.body;
+  try {
+    await cloudinary.uploader.destroy(publicId);
+    return res.status(200).json({ success: true, message: "Image deleted" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export { createListing, deleteListing, updateListing, getListing, deleteImage }
