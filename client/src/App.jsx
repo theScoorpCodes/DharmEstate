@@ -1,6 +1,5 @@
-import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, About, Profile, Signin, SignUp, CreateListing, UpdateListing } from "./pages/index.js";
+import { Home, About, Profile, Signin, SignUp, CreateListing, UpdateListing, Listing } from "./pages/index.js";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -14,6 +13,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/listing/:listingId" element={<Listing />} />
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-listing" element={<CreateListing />} />
