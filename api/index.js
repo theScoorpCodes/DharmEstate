@@ -5,6 +5,8 @@ import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 import listingRoutes from "./routes/listing.route.js";
 import cookieParser from "cookie-parser";
+import path from "path";
+
 
 //dotenv configuration
 dotenv.config();
@@ -16,6 +18,8 @@ await mongoose.connect(`${process.env.MONGODB_URL}`).then(() => {
   console.error("Error connecting to MongoDB:", error);
 });
 
+const __dirname = path.resolve();
+
 // Express app setup
 const app = express();
 app.use(express.json());
@@ -25,6 +29,11 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/listing", listingRoutes);
+
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/client/dist/index.html"));
+})
 
 // app start
 app.listen(3000, () => {
