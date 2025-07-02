@@ -7,7 +7,7 @@ function Search() {
   const [sidebarData, setSidebarData] = useState({
     searchTerm: "",
     type: "all",
-    parking: true,
+    parking: false,
     furnished: false,
     offer: false,
     sort: "created_at",
@@ -15,14 +15,15 @@ function Search() {
   });
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState(null);
-
+  const [showMore, setShowMore] = useState(false);
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get("searchTerm");
     const typeFromUrl = urlParams.get("type");
-    const parkingFromUrl = (urlParams.get("parking") === "true") ? true : false;
-    const furnishedFromUrl = (urlParams.get("furnished") === "true") ? true : false;
-    const offerFromUrl = (urlParams.get("offer") === "true") ? true : false;
+    const parkingFromUrl = urlParams.get("parking") === "true" ? true : false;
+    const furnishedFromUrl =
+      urlParams.get("furnished") === "true" ? true : false;
+    const offerFromUrl = urlParams.get("offer") === "true" ? true : false;
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
     if (
@@ -45,17 +46,22 @@ function Search() {
       });
     }
     const fetchListing = async () => {
+      setShowMore(false);
       setLoading(true);
       const searchQuery = urlParams.toString();
       const res = await fetch(`/api/listing/get?${searchQuery}`, {
         method: "GET",
       });
       const data = await res.json();
-      console.log(data);
       if (data.success === false) {
         console.log("error happened");
         setLoading(false);
         return;
+      }
+      if (data.length > 8) {
+        setShowMore(true);
+      }else{
+        setShowMore(false);
       }
       setListings(data);
       setLoading(false);
@@ -64,6 +70,22 @@ function Search() {
     fetchListing();
   }, [location.search]);
 
+  const onShowMoreClick = async () => {
+    const numberOfListings = listings.length;
+    const urlParams = new URLSearchParams(location.search);
+    const startIndex = numberOfListings;
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`/api/listing/get?${searchQuery}`, {
+      method: "GET",
+    });
+    const data = await res.json();
+    
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+    setListings([...listings, ...data]);
+  };
 
   const handleChange = (e) => {
     if (
@@ -222,10 +244,23 @@ function Search() {
             <p className="text-xl text-slate-700">No listing found</p>
           )}
           {loading && (
-            <p className="text-xl text-slate-700 text-center w-full">Loading...</p>
+            <p className="text-xl text-slate-700 text-center w-full">
+              Loading...
+            </p>
           )}
-          {!loading && listings && listings.map((listing) => <ListingItem listing={listing} key={listing._id} />)}
-          
+          {!loading &&
+          listings &&
+            listings.map((listing) => (
+              <ListingItem listing={listing} key={listing._id} />
+            ))}
+          {showMore && listings && listings.length > 0 && !loading && (
+            <button
+              className="text-green-700 hover:underline p-7 w-full text-center"
+              onClick={onShowMoreClick}
+            >
+              Show more
+            </button>
+          )}
         </div>
       </div>
     </div>
