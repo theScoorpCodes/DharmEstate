@@ -23,8 +23,6 @@ function Profile() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // console.log(file);
-  console.log(currentUser);
 
   useEffect(() => {
     if (file) {

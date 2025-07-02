@@ -40,7 +40,7 @@ function Home() {
 
     const fetchSaleListings = async () => {
       try {
-        const res = await fetch("/api/listing/get?type=sale&limit=4");
+        const res = await fetch("/api/listing/get?type=sell&limit=4");
         const data = await res.json();
         setSaleListings(data);
       } catch (error) {
@@ -93,45 +93,61 @@ function Home() {
         {offerListings && offerListings.length > 0 && (
           <div className="">
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-700">Recent Offers</h2>
-              <Link to={`/search?offer=true`} className="text-sm text-blue-800 hover:underline">Show more Offers</Link>
+              <h2 className="text-2xl font-semibold text-slate-700">
+                Recent Offers
+              </h2>
+              <Link
+                to={`/search?offer=true`}
+                className="text-sm text-blue-800 hover:underline"
+              >
+                Show more Offers
+              </Link>
             </div>
             <div className="flex flex-wrap gap-4">
-              {
-                offerListings.map((listing) => (
-                  <ListingItem listing={listing} key={listing._id} />
-                ))
-              }
+              {offerListings.map((listing) => (
+                <ListingItem listing={listing} key={listing._id} />
+              ))}
             </div>
           </div>
         )}
         {rentListings && rentListings.length > 0 && (
           <div className="">
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-700">Recent Places for rent</h2>
-              <Link to={`/search?type=rent`} className="text-sm text-blue-800 hover:underline">Show more places for rent</Link>
+              <h2 className="text-2xl font-semibold text-slate-700">
+                Recent Places for rent
+              </h2>
+              <Link
+                to={`/search?type=rent`}
+                className="text-sm text-blue-800 hover:underline"
+              >
+                Show more places for rent
+              </Link>
             </div>
             <div className="flex flex-wrap gap-4">
-              {
-                rentListings.map((listing) => (
-                  <ListingItem listing={listing} key={listing._id} />
-                ))
-              }
+              {rentListings.map((listing) => (
+                <ListingItem listing={listing} key={listing._id} />
+              ))}
             </div>
           </div>
         )}
+        {console.log(saleListings)}
         {saleListings && saleListings.length > 0 && (
           <div className="">
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-700">Recent places for sale</h2>
-              <Link to={`/search?offer=true`} className="text-sm text-blue-800 hover:underline">Show more places for sale</Link>
+              <h2 className="text-2xl font-semibold text-slate-700">
+                Recent places for sale
+              </h2>
+              <Link
+                to={`/search?offer=true`}
+                className="text-sm text-blue-800 hover:underline"
+              >
+                Show more places for sale
+              </Link>
             </div>
             <div className="flex flex-wrap gap-4">
-              {
-                saleListings.map((listing) => (
-                  <ListingItem listing={listing} key={listing._id} />
-                ))
-              }
+              {saleListings.map((listing) => (
+                <ListingItem listing={listing} key={listing._id} />
+              ))}
             </div>
           </div>
         )}
